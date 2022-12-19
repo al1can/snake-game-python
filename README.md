@@ -17,6 +17,7 @@ A terminal snake game written in Python
                      \      ~-____-~    _-~    ~-_    ~-_-~    / 
                        ~-_           _-~          ~-_       _-~  
                           ~--______-~                ~-___-~     
+                          
            This is a terminal snake game written in Python       
            This basic game is created by Ali Can Gunduz
            You can set the width with the options -x or --width  
