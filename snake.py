@@ -15,37 +15,32 @@ class Snake:
         self.board_width = board_width
         self.board_height = board_height
         # Update the snake_parts
-        self.snake_parts = [[self.board_width//2, self.board_height//2]]
-        #self.snake_parts = self.board_width
-    # Update the snake_parts with new coords
+        self.snake_parts = [[self.board_width//2+1, self.board_height//2],
+                            [self.board_width//2, self.board_height//2],
+                            [self.board_width//2-1, self.board_height//2]]
     # Check if game ended
     def check_game_ended(self):
         for coord in self.snake_parts:
             if self.snake_parts.count(coord) > 1:
-                print(f'\nYou lost! Your score was {self.snake_score}')
+                print(f'\nYou lost! Your score was {self.snake_score}!')
                 return True
         return False
     # Make snake taller and add score
     def make_snake_taller(self):
         self.snake_score += 1
         logging.info(f'Snake parts are: {self.snake_parts}')
-        # At first you add it to a random axes and every other time it adds to the axes
-        if self.snake_score > 1:
-            coord_of_tail = self.snake_parts[-1]
-            coord_of_body = self.snake_parts[-2]
-            if coord_of_tail[1] == coord_of_body[1]:
-                if coord_of_tail[0] > coord_of_body[0]:
-                    self.snake_parts.append([coord_of_tail[0] + 1, coord_of_tail[1]])
-                else:
-                    self.snake_parts.append([coord_of_tail[0] - 1, coord_of_tail[1]])
-            elif coord_of_tail[0] == coord_of_body[0]:
-                if coord_of_tail[1] > coord_of_body[1]:
-                    self.snake_parts.append([coord_of_tail[0], coord_of_tail[1] + 1])
-                else:
-                    self.snake_parts.append([coord_of_tail[0], coord_of_tail[1] - 1])
-        else:
-            coord_of_tail = self.snake_parts[-1]
-            self.snake_parts.append([coord_of_tail[0] + 1, coord_of_tail[1]])
+        coord_of_tail = self.snake_parts[-1]
+        coord_of_body = self.snake_parts[-2]
+        if coord_of_tail[1] == coord_of_body[1]:
+            if coord_of_tail[0] > coord_of_body[0]:
+                self.snake_parts.append([coord_of_tail[0] + 1, coord_of_tail[1]])
+            else:
+                self.snake_parts.append([coord_of_tail[0] - 1, coord_of_tail[1]])
+        elif coord_of_tail[0] == coord_of_body[0]:
+            if coord_of_tail[1] > coord_of_body[1]:
+                self.snake_parts.append([coord_of_tail[0], coord_of_tail[1] + 1])
+            else:
+                self.snake_parts.append([coord_of_tail[0], coord_of_tail[1] - 1])
     # Create apple
     def create_apple(self):
         range_width = list(range(self.board_width))
@@ -63,7 +58,6 @@ class Snake:
         self.apple_pos = [rand_width, rand_height]
         logging.info(f'Position of the apple is: {self.apple_pos}')
         logging.info(f'Position of the snake is: {self.snake_parts}')
-
     # Make snake move
     def move(self):
         key = msvcrt.getwch()
@@ -72,22 +66,20 @@ class Snake:
         # Move tail to the head easy fix
         if key == 'w':
             head = self.snake_parts[0]
-            self.snake_parts.insert(0, [head[0], head[1]-1])
+            self.snake_parts.insert(0, [head[0]%self.board_width, (head[1]-1)%self.board_height])
             self.snake_parts.remove(self.snake_parts[-1])
         elif key == 's':
             head = self.snake_parts[0]
-            self.snake_parts.insert(0, [head[0], head[1]+1])
+            self.snake_parts.insert(0, [head[0]%self.board_width, (head[1]+1)%self.board_height])
             self.snake_parts.remove(self.snake_parts[-1])
         elif key == 'a':
             head = self.snake_parts[0]
-            self.snake_parts.insert(0, [head[0]-1, head[1]])
+            self.snake_parts.insert(0, [(head[0]-1)%self.board_width, head[1]%self.board_height])
             self.snake_parts.remove(self.snake_parts[-1])
         elif key == 'd':
             head = self.snake_parts[0]
-            self.snake_parts.insert(0, [head[0]+1, head[1]])
+            self.snake_parts.insert(0, [(head[0]+1)%self.board_width, head[1]%self.board_height])
             self.snake_parts.remove(self.snake_parts[-1])
-        else:
-            logging.info("No key is pressed")
     # Print the board
     def print_board(self):
         # nt being the os name for windows
@@ -130,13 +122,11 @@ def main():
         # Print the board
         snake.print_board()
         # Make snake move
-        # This input logic is bad because you need to wait for an input
-        # TODO Fix this
         snake.move()
         # Check if apple eaten
         if snake.check_eat_apple() == True:
             # Create apple
-            # For some reason sometimes the apple wont some up
             snake.create_apple()
+
 if __name__ == '__main__':
     main()
