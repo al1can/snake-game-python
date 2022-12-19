@@ -4,6 +4,7 @@ import logging
 import msvcrt
 import sys
 import getopt
+import time
 
 class Snake:
     snake_score = 0
@@ -61,8 +62,19 @@ class Snake:
         logging.info(f'Position of the apple is: {self.apple_pos}')
         logging.info(f'Position of the snake is: {self.snake_parts}')
     # Make snake move
-    def move(self):
-        key = msvcrt.getwch()
+    def move(self, prev_key, difficulty):
+        key = None
+        if msvcrt.kbhit():
+            key = msvcrt.getwch()
+        # If there is no active pressed key snake moves in the previous keys direction
+        if key is None:
+            key = prev_key
+        if difficulty == 1:
+            time.sleep(0.2)
+        elif difficulty == 2:
+            time.sleep(0.1)
+        elif difficulty == 3:
+            time.sleep(0.05)
         #key = key.split('')
         logging.info(f'Pressed key is: {key}, type for key is: {type(key)}')
         # Move tail to the head easy fix
@@ -82,6 +94,7 @@ class Snake:
             head = self.snake_parts[0]
             self.snake_parts.insert(0, [(head[0]+1)%self.board_width, head[1]%self.board_height])
             self.snake_parts.remove(self.snake_parts[-1])
+        return key
     # Print the board
     def print_board(self):
         # nt being the os name for windows
@@ -114,10 +127,13 @@ def main():
     # Default width and height
     width = 27
     height = 13
+    difficulties = ['easy', 'medium', 'hard']
+    # Default difficulty is medium
+    difficulty = 2
     # Accepting arguments from cli for setting height and width and displaying help
     args_list = sys.argv[1:]
-    short_opts = "x:y:h"
-    long_opts = ["width=", "height=", "help"]
+    short_opts = "x:y:d:h"
+    long_opts = ["width=", "height=", "difficulty=", "help"]
     try:
         options, arguments = getopt.getopt(args_list, shortopts=short_opts, longopts=long_opts)
         for opt, arg in options:
@@ -126,6 +142,14 @@ def main():
                 width = int(arg)
             elif opt in ('-y', '--height'):
                 height = int(arg)
+            elif opt in ('-d', '--difficulty'):
+                if int(arg) in (1, 2, 3):
+                    difficulty = int(arg)
+                else:
+                    print("Desired difficulty is not available!")
+                    print("You can use the following options")
+                    print('\t1. Easy\n\t2. Medium \n\t3. Hard')
+                    sys.exit()
             elif opt in ('-h', '--help'):
                 print('           /^\/^\\')
                 print('         _|__|  O|')
@@ -149,6 +173,8 @@ def main():
                 print('You can set the width with the options -x or --width')
                 print('and height with the options -y or --height')
                 print(f'Default values are {width} for width and {height} for height')
+                print('You can change the difficulty too')
+                print('Available diffuculties \n\t1. Easy\n\t2. Medium \n\t3. Hard')
                 sys.exit()
     except getopt.error as err:
         print(str(err))
@@ -157,6 +183,9 @@ def main():
     snake = Snake(width, height)
     # Create apple for the beginning of the game
     snake.create_apple()
+    # When the game start the default direction is right
+    prev_key = 'd'
+
     # Game loop
     while (True):
         # Check if game ended
@@ -165,7 +194,7 @@ def main():
         # Print the board
         snake.print_board()
         # Make snake move
-        snake.move()
+        prev_key = snake.move(prev_key, difficulty)
         # Check if apple eaten
         if snake.check_eat_apple() == True:
             # Create apple
