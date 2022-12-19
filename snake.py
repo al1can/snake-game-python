@@ -22,6 +22,7 @@ class Snake:
     def check_game_ended(self):
         for coord in self.snake_parts:
             if self.snake_parts.count(coord) > 1:
+                print(f'\nYou lost! Your score was {self.snake_score}')
                 return True
         return False
     # Make snake taller and add score
@@ -47,8 +48,8 @@ class Snake:
             self.snake_parts.append([coord_of_tail[0] + 1, coord_of_tail[1]])
     # Create apple
     def create_apple(self):
-        range_width = list(range(1, self.board_width + 1))
-        range_height = list(range(1, self.board_height + 1))
+        range_width = list(range(self.board_width))
+        range_height = list(range(self.board_height))
         logging.info(f'Range for width is: {range_width}, range for height is: {range_height}')
         for x, y in self.snake_parts:
             logging.info(f'{x}, {y}')
@@ -56,8 +57,8 @@ class Snake:
                 range_width.remove(x)
             if y in range_height:
                 range_height.remove(y)
-        rand_width = random.randrange(1, self.board_width + 1)
-        rand_height = random.randrange(1, self.board_height + 1)
+        rand_width = random.choice(range_width)
+        rand_height = random.choice(range_height)
 
         self.apple_pos = [rand_width, rand_height]
         logging.info(f'Position of the apple is: {self.apple_pos}')
@@ -85,6 +86,8 @@ class Snake:
             head = self.snake_parts[0]
             self.snake_parts.insert(0, [head[0]+1, head[1]])
             self.snake_parts.remove(self.snake_parts[-1])
+        else:
+            logging.info("No key is pressed")
     # Print the board
     def print_board(self):
         # nt being the os name for windows
@@ -135,7 +138,5 @@ def main():
             # Create apple
             # For some reason sometimes the apple wont some up
             snake.create_apple()
-
-    print(snake.snake_parts)
 if __name__ == '__main__':
     main()
