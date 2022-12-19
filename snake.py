@@ -68,7 +68,6 @@ class Snake:
         key = msvcrt.getwch()
         #key = key.split('')
         logging.info(f'Pressed key is: {key}, type for key is: {type(key)}')
-
         # Move tail to the head easy fix
         if key == 'w':
             head = self.snake_parts[0]
