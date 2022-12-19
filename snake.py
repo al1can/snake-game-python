@@ -2,6 +2,8 @@ import random
 import os
 import logging
 import msvcrt
+import sys
+import getopt
 
 class Snake:
     snake_score = 0
@@ -47,7 +49,7 @@ class Snake:
         range_height = list(range(self.board_height))
         logging.info(f'Range for width is: {range_width}, range for height is: {range_height}')
         for x, y in self.snake_parts:
-            logging.info(f'{x}, {y}')
+            logging.info(f'Snake part position x: {x}, y: {y}')
             if x in range_width:
                 range_width.remove(x)
             if y in range_height:
@@ -93,7 +95,7 @@ class Snake:
             print('#', end='')
             for x in range(self.board_width):
                 if [x, y] in self.snake_parts:
-                    print('X', end='')
+                    print('0', end='')
                 elif [x, y] == self.apple_pos:
                     print('@', end='')
                 else:
@@ -109,9 +111,50 @@ class Snake:
         return False
 
 def main():
+    # Default width and height
+    width = 27
+    height = 13
+    # Accepting arguments from cli for setting height and width and displaying help
+    args_list = sys.argv[1:]
+    short_opts = "x:y:h"
+    long_opts = ["width=", "height=", "help"]
+    try:
+        options, arguments = getopt.getopt(args_list, shortopts=short_opts, longopts=long_opts)
+        for opt, arg in options:
+            logging.info(f'Options are: {opt}, arguments are: {arg}')
+            if opt in ('-x', '--width'):
+                width = int(arg)
+            elif opt in ('-y', '--height'):
+                height = int(arg)
+            elif opt in ('-h', '--help'):
+                print('           /^\/^\\')
+                print('         _|__|  O|')
+                print('\/     /~     \_/ \\')
+                print('\____|__________/  \\')
+                print('        \_______      \\')
+                print('                `\     \                    \\')
+                print('                /     /                       \\')
+                print('                 /      /                    \\ \ ')
+                print('                /     /                       \\ \ ')
+                print('              /      /                         \ \\ ')
+                print('             /     /                            \  \\ ')
+                print('           /     /             _----_            \   \\')
+                print('          /     /           _-~      ~-_         |   |')
+                print('         (      (        _-~    _--_    ~-_     _/   |')
+                print('          \      ~-____-~    _-~    ~-_    ~-_-~    /')
+                print('            ~-_           _-~          ~-_       _-~')
+                print('               ~--______-~                ~-___-~')
+                print('This is a terminal snake game written in Python')
+                print('This basic game is created by Ali Can Gunduz')
+                print('You can set the width with the options -x or --width')
+                print('and height with the options -y or --height')
+                print(f'Default values are {width} for width and {height} for height')
+                sys.exit()
+    except getopt.error as err:
+        print(str(err))
     logging.basicConfig(level=logging.INFO, filename='snake.log', filemode='w')
     # Create the class instance
-    snake = Snake(27, 13)
+    snake = Snake(width, height)
     # Create apple for the beginning of the game
     snake.create_apple()
     # Game loop
